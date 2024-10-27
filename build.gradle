@@ -1,0 +1,87 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+}
+
+group = 'com.framework.king'
+version = '1.0.0'
+
+java {
+	withJavadocJar()
+	withSourcesJar()
+}
+
+
+repositories {
+	mavenCentral()
+
+	maven {
+		url 'https://localhost:8081/repository/framework-king/'
+		metadataSources {
+			mavenPom()
+			artifact()
+		}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifactId = 'framework.king'
+
+			pom {
+				name = 'Framework King'
+				description = 'A library for custom annotations'
+				url = 'https://github.com/your-repo'
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0'
+					}
+				}
+				developers {
+					developer {
+						id = '855'
+						name = 'Phansivang'
+						email = 'phansivang@gmail.com'
+					}
+				}
+				scm {
+					connection = 'scm:git:git://github.com/your-repo.git'
+					developerConnection = 'scm:git:ssh://github.com/your-repo.git'
+					url = 'https://github.com/your-repo'
+				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			name = 'Nexus'
+			url = uri('http://localhost:8081/repository/framework-king/')
+
+			credentials {
+				username = findProperty("nexusUsername")
+				password = findProperty("nexusPassword")
+			}
+		}
+	}
+}
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-aop:3.3.5'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave:1.0.2'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave:2.16.3'
+	implementation 'io.zipkin.reporter2:zipkin-sender-kafka:2.16.3'
+
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.8.2'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
